@@ -1,0 +1,62 @@
+[
+  {
+    "id": 3,
+    "title": "Producto 3",
+    "description": "Descripción del producto 1",
+    "code": "P001",
+    "price": 100,
+    "stock": 50,
+    "category": "Electronics"
+  },
+  {
+    "id": 4,
+    "title": "Producto 4",
+    "description": "Descripción del producto 1",
+    "code": "P001",
+    "price": 100,
+    "stock": 50,
+    "category": "Electronics"
+  },
+  {
+    "id": 5,
+    "title": "Producto 5",
+    "description": "Descripción del producto 1",
+    "code": "P001",
+    "price": 100,
+    "stock": 50,
+    "category": "Electronics"
+  },
+  {
+    "id": 6,
+    "title": "Producto nuevo",
+    "description": "Descripción del producto",
+    "code": "P001",
+    "price": 100,
+    "stock": 50,
+    "category": "Electronics",
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": 7,
+    "title": "Producto nuevo",
+    "description": "Descripción del producto",
+    "code": "P001",
+    "price": 100,
+    "stock": 50,
+    "category": "Electronics",
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": 8,
+    "title": "Producto nuevo",
+    "description": "Descripción del producto",
+    "code": "P001",
+    "price": 100,
+    "stock": 50,
+    "category": "Electronics",
+    "status": true,
+    "thumbnails": []
+  }
+]
