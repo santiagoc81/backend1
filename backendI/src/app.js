@@ -15,7 +15,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Configuración de handlebars
-app.engine('handlebars', handlebars.engine());
+// Configuración de handlebars con opciones de seguridad
+app.engine(
+    'handlebars',
+    handlebars.engine({
+        runtimeOptions: {
+            allowProtoPropertiesByDefault: true,
+            allowProtoMethodsByDefault: true
+        }
+    })
+);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'handlebars');
 
@@ -24,7 +33,7 @@ app.use(express.static(__dirname + '/public'));
 
 // Rutas de API
 app.use('/api/products', productsRouter);
-app.use('/api/cart', cartRouter);
+app.use('/api/carts', cartRouter);
 
 // Rutas de vistas
 app.use('/', viewsRouter);
@@ -66,3 +75,13 @@ io.on('connection', async (socket) => {
         }
     });
 });
+
+
+//Configuro mongoose
+import mongoose from 'mongoose';
+
+const mongoUri = 'mongodb://localhost:27017/proyectobackendI';
+
+mongoose.connect(mongoUri)
+    .then(() => console.log('Conectado a MongoDB'))
+    .catch((err) => console.error('Error de conexión a MongoDB:', err));

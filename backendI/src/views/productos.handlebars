@@ -1,17 +1,56 @@
-<!-- views/productos.handlebars -->
 <h1>Lista de Productos</h1>
 
-<ul>
-  {{#each productos}}
-    <li>
-      <strong>ID:</strong> {{this.id}}<br>
-      <strong>Nombre:</strong> {{this.title}}<br>
-      <strong>Descripción:</strong> {{this.description}}<br>
-      <strong>Código:</strong> {{this.code}}<br>
-      <strong>Precio:</strong> ${{this.price}}<br>
-      <strong>Stock:</strong> {{this.stock}} unidades<br>
-      <strong>Categoría:</strong> {{this.category}}<br>
-    </li>
+<div class="product-list">
+    {{#each productos}}
+    <div class="product-item">
+        <h3>{{this.title}}</h3>
+        <p><strong>Descripción:</strong> {{this.description}}</p>
+        <p><strong>Precio:</strong> ${{this.price}}</p>
+        <p><strong>Categoría:</strong> {{this.category}}</p>
+        <p><strong>Stock:</strong> {{this.stock}}</p>
+        <button onclick="agregarAlCarrito('{{this._id}}')">Agregar al Carrito</button>
+    </div>
     <hr>
-  {{/each}}
-</ul>
+    {{/each}}
+</div>
+
+<!-- Controles de paginación -->
+<div class="pagination">
+    {{#if hasPrevPage}}
+        <a href="{{prevLink}}">Anterior</a>
+    {{else}}
+        <span>Anterior</span>
+    {{/if}}
+
+    <span>Página {{page}} de {{totalPages}}</span>
+
+    {{#if hasNextPage}}
+        <a href="{{nextLink}}">Siguiente</a>
+    {{else}}
+        <span>Siguiente</span>
+    {{/if}}
+</div>
+
+<script>
+    // Función para manejar el botón "Agregar al Carrito"
+    function agregarAlCarrito(productId) {
+        fetch(`/api/carts/products/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Error en la respuesta del servidor");
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                alert(`Producto agregado al carrito exitosamente! Carrito ID: ${data.cartId}`);
+            } else {
+                alert('Error al agregar producto al carrito.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>

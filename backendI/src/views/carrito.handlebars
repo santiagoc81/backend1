@@ -1,0 +1,18 @@
+<!-- src/views/carrito.handlebars -->
+<h1>Carrito ID: {{cartId}}</h1>
+
+<div class="cart-products">
+    {{#if products.length}}
+        {{#each products}}
+        <div class="product-item">
+            <h3>{{this.product.title}}</h3>
+            <p><strong>Descripción:</strong> {{this.product.description}}</p>
+            <p><strong>Precio:</strong> ${{this.product.price}}</p>
+            <p><strong>Cantidad:</strong> {{this.quantity}}</p>
+        </div>
+        <hr>
+        {{/each}}
+    {{else}}
+        <p>No hay productos en este carrito.</p>
+    {{/if}}
+</div>

@@ -6,30 +6,46 @@ const productsManager = new ProductsManager();
 
 // Ruta para obtener todos los productos con límite opcional
 router.get('/', async (req, res) => {
+    const { limit = 10, page = 1, sort, query } = req.query;
+
     try {
-        const productos = await productsManager.leerProductos();
-        const limit = parseInt(req.query.limit);
-        const productosLimitados = limit && !isNaN(limit) ? productos.slice(0, limit) : productos;
-        res.status(200).json(productosLimitados);
+        const productos = await productsManager.leerProductos({
+            limit,
+            page,
+            sort,
+            query
+        });
+
+        // Construir enlaces prevLink y nextLink
+        const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
+        const prevLink = productos.hasPrevPage ? `${baseUrl}/?limit=${limit}&page=${productos.prevPage}&sort=${sort || ''}&query=${query || ''}` : null;
+        const nextLink = productos.hasNextPage ? `${baseUrl}/?limit=${limit}&page=${productos.nextPage}&sort=${sort || ''}&query=${query || ''}` : null;
+
+        res.status(200).json({
+            status: 'success',
+            payload: productos.docs,
+            totalPages: productos.totalPages,
+            prevPage: productos.prevPage,
+            nextPage: productos.nextPage,
+            page: productos.page,
+            hasPrevPage: productos.hasPrevPage,
+            hasNextPage: productos.hasNextPage,
+            prevLink: prevLink,
+            nextLink: nextLink
+        });
     } catch (error) {
         console.log(error);
-        res.status(500).send({ status: 'error', error: 'Error al obtener productos' });
+        res.status(500).json({ status: 'error', error: 'Error al obtener productos' });
     }
 });
 
 // Ruta para agregar un producto
 router.post('/', async (req, res) => {
-    const product = req.body;
-    if (!product.title || !product.description || !product.code || !product.price || !product.stock || !product.category) {
-        return res.status(400).send({ status: 'error', error: 'Campos obligatorios faltantes' });
-    }
-
     try {
-        await productsManager.crearProducto(product);
-        res.status(201).send({ status: 'success', message: 'Producto creado exitosamente' });
+        const nuevoProducto = await productsManager.crearProducto(req.body);
+        res.status(201).json(nuevoProducto);
     } catch (error) {
-        console.log(error);
-        res.status(500).send({ status: 'error', error: 'Error al crear producto' });
+        res.status(500).json({ error: 'Error al crear producto' });
     }
 });
 
@@ -88,5 +104,7 @@ router.delete('/:pid', async (req, res) => {
         res.status(500).send({ status: 'error', error: 'Error al eliminar el producto' });
     }
 });
+
+
 
 export default router;

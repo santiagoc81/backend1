@@ -1,5 +1,6 @@
+import Product from '../models/product.model.js'; // Importa el modelo de productos de MongoDB
 import fs from 'fs/promises';
-import Joi from 'joi';  // Importar Joi
+import Joi from 'joi';
 
 class ProductsManager {
 
@@ -8,20 +9,16 @@ class ProductsManager {
   }
 
   // Definir un esquema de validación para los productos usando Joi
-productoSchema = Joi.object({
-  title: Joi.string().required(),
-  description: Joi.string().required(),
-  code: Joi.string().required(),
-  price: Joi.number().positive().required(),
-  stock: Joi.number().integer().min(0).required(),
-  category: Joi.string().required(),
-  status: Joi.boolean().default(true), // true por defecto
-  thumbnails: Joi.alternatives().try(
-    Joi.array().items(Joi.string()),
-    Joi.string().allow('')
-  ).default([]) // Permitir array de strings o una cadena vacía, default a []
-});
-
+  productoSchema = Joi.object({
+    title: Joi.string().required(),
+    description: Joi.string().required(),
+    code: Joi.string().required(),
+    price: Joi.number().positive().required(),
+    stock: Joi.number().integer().min(0).required(),
+    category: Joi.string().required(),
+    status: Joi.boolean().default(true), // true por defecto
+    thumbnails: Joi.array().items(Joi.string()).default([]) // no requerido
+  });
 
   // Función para crear un producto con ID único autoincremental
   async crearProducto(producto) {
@@ -67,32 +64,21 @@ productoSchema = Joi.object({
     }
   }
 
-  async leerProductos() {
-    try {
-      const data = await fs.readFile(this.filePath, 'utf-8');
-      if (!data) {
-        return [];
-      }
-      return JSON.parse(data); 
-    } catch (error) {
-      if (error.code === 'ENOENT') {
-        return []; // Si el archivo no existe, devolvemos un array vacío
-      } else {
-        console.log(error);
-        console.error('Error al leer productos:', error);
-        throw error; 
-      }
-    }
-  }
+  async leerProductos({ limit = 10, page = 1, sort, query }) {
+    const options = {
+        limit: parseInt(limit), // Establece el número de productos por página
+        page: parseInt(page),   // Establece la página actual
+        sort: sort ? { price: sort === 'asc' ? 1 : -1 } : null, // Ordena por precio si se especifica
+        lean: true  // Devuelve resultados en un formato JSON plano
+    };
 
-  // Actualizar productos
-  async actualizarProductos(productos) {
-    try {
-      await fs.writeFile(this.filePath, JSON.stringify(productos, null, 2));
-    } catch (error) {
-      throw error;
-    }
-  }
+    // Aplica un filtro de búsqueda si se especifica `query`
+    const filter = query ? { category: query } : {};
+
+    // Usamos `.paginate` para obtener los productos con paginación
+    return await Product.paginate(filter, options);
+}
+
 }
 
 export default ProductsManager;
