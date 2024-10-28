@@ -1,0 +1,17 @@
+<!-- views/productos.handlebars -->
+<h1>Lista de Productos</h1>
+
+<ul>
+  {{#each productos}}
+    <li>
+      <strong>ID:</strong> {{this.id}}<br>
+      <strong>Nombre:</strong> {{this.title}}<br>
+      <strong>Descripción:</strong> {{this.description}}<br>
+      <strong>Código:</strong> {{this.code}}<br>
+      <strong>Precio:</strong> ${{this.price}}<br>
+      <strong>Stock:</strong> {{this.stock}} unidades<br>
+      <strong>Categoría:</strong> {{this.category}}<br>
+    </li>
+    <hr>
+  {{/each}}
+</ul>

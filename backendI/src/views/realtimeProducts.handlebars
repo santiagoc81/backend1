@@ -1,0 +1,74 @@
+<!-- views/realtimeProducts.handlebars -->
+<h1>Productos en Tiempo Real</h1>
+
+<!-- Formulario para crear productos -->
+<form id="productForm">
+    <label>Nombre:</label>
+    <input type="text" name="title" required><br>
+
+    <label>Descripción:</label>
+    <input type="text" name="description" required><br>
+
+    <label>Código:</label>
+    <input type="text" name="code" required><br>
+
+    <label>Precio:</label>
+    <input type="number" name="price" required><br>
+
+    <label>Stock:</label>
+    <input type="number" name="stock" required><br>
+
+    <label>Categoría:</label>
+    <input type="text" name="category" required><br>
+
+    <label>Thumbnails:</label>
+    <input type="text" name="thumbnails"><br>
+
+    <button type="submit">Crear Producto</button>
+</form>
+
+<hr>
+
+<!-- Lista de productos -->
+<ul id="productList">
+    {{#each productos}}
+    <li>
+        <strong>ID:</strong> {{this.id}} - <strong>Nombre:</strong> {{this.title}} - <strong>Precio:</strong>
+        ${{this.price}}
+        <button onclick="eliminarProducto({{this.id}})">Eliminar</button>
+    </li>
+    {{/each}}
+</ul>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+
+    // Actualizar la lista de productos en tiempo real
+    socket.on('productos', (productos) => {
+        const productList = document.getElementById('productList');
+        productList.innerHTML = '';
+        productos.forEach(producto => {
+            const li = document.createElement('li');
+            li.innerHTML = `<strong>ID:</strong> ${producto.id} - <strong>Nombre:</strong> ${producto.title} - <strong>Precio:</strong> $${producto.price} <button onclick="eliminarProducto(${producto.id})">Eliminar</button>`;
+            productList.appendChild(li);
+        });
+    });
+
+    // Manejar el envío del formulario para crear un producto
+    document.getElementById('productForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const nuevoProducto = Object.fromEntries(formData);
+        nuevoProducto.price = parseFloat(nuevoProducto.price);
+        nuevoProducto.stock = parseInt(nuevoProducto.stock);
+
+        socket.emit('crearProducto', nuevoProducto);
+        e.target.reset(); // Limpiar formulario
+    });
+
+    // Función para eliminar producto
+    function eliminarProducto(productId) {
+        socket.emit('eliminarProducto', productId);
+    }
+</script>

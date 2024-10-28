@@ -8,16 +8,20 @@ class ProductsManager {
   }
 
   // Definir un esquema de validación para los productos usando Joi
-  productoSchema = Joi.object({
-    title: Joi.string().required(),
-    description: Joi.string().required(),
-    code: Joi.string().required(),
-    price: Joi.number().positive().required(),
-    stock: Joi.number().integer().min(0).required(),
-    category: Joi.string().required(),
-    status: Joi.boolean().default(true), // true por defecto
-    thumbnails: Joi.array().items(Joi.string()).default([]) // no requerido
-  });
+productoSchema = Joi.object({
+  title: Joi.string().required(),
+  description: Joi.string().required(),
+  code: Joi.string().required(),
+  price: Joi.number().positive().required(),
+  stock: Joi.number().integer().min(0).required(),
+  category: Joi.string().required(),
+  status: Joi.boolean().default(true), // true por defecto
+  thumbnails: Joi.alternatives().try(
+    Joi.array().items(Joi.string()),
+    Joi.string().allow('')
+  ).default([]) // Permitir array de strings o una cadena vacía, default a []
+});
+
 
   // Función para crear un producto con ID único autoincremental
   async crearProducto(producto) {
