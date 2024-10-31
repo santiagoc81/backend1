@@ -6,6 +6,13 @@ import productsRouter from './routes/products.router.js';
 import cartRouter from './routes/cart.router.js';
 import viewsRouter from './routes/views.router.js';
 import ProductsManager from './manager/productsManager.js';
+import mongoose from 'mongoose';
+
+const mongoUri = 'mongodb://localhost:27017/proyectobackendI';
+
+mongoose.connect(mongoUri)
+    .then(() => console.log('Conectado a MongoDB'))
+    .catch((err) => console.error('Error de conexión a MongoDB:', err));
 
 const app = express();
 const port = 8080;
@@ -77,11 +84,3 @@ io.on('connection', async (socket) => {
 });
 
 
-//Configuro mongoose
-import mongoose from 'mongoose';
-
-const mongoUri = 'mongodb://localhost:27017/proyectobackendI';
-
-mongoose.connect(mongoUri)
-    .then(() => console.log('Conectado a MongoDB'))
-    .catch((err) => console.error('Error de conexión a MongoDB:', err));
